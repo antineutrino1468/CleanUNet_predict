@@ -7,7 +7,7 @@
    Execute `predict.py` using the following command:
 
 ```
-python predict.py
+  python predict.py
 ```
 
 3. **Cleaned WAV Output:**
