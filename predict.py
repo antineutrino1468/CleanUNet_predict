@@ -18,7 +18,7 @@ from util import print_size, sampling
 from network import CleanUNet
 
 
-def ezdenoise():
+def predict():
     """
     Denoise audio
 
@@ -92,4 +92,4 @@ def ezdenoise():
                 generated_audio[0].squeeze().cpu().numpy())
 
 if __name__ == "__main__":
-    ezdenoise()
+    predict()
