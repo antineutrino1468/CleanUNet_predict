@@ -7,13 +7,20 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from util import weight_scaling_init
-
 
 # Transformer (encoder) https://github.com/jadore801120/attention-is-all-you-need-pytorch
 # Original Copyright 2017 Victor Huang
 #  MIT License (https://opensource.org/licenses/MIT)
 
+def weight_scaling_init(layer):
+    """
+    weight rescaling initialization from https://arxiv.org/abs/1911.13254
+    """
+    w = layer.weight.detach()
+    alpha = 10.0 * w.std()
+    layer.weight.data /= torch.sqrt(alpha)
+    layer.bias.data /= torch.sqrt(alpha)
+    
 class ScaledDotProductAttention(nn.Module):
     ''' Scaled Dot-Product Attention '''
 
@@ -109,15 +116,6 @@ class PositionwiseFeedForward(nn.Module):
         x = self.layer_norm(x)
 
         return x
-
-
-def get_subsequent_mask(seq):
-    ''' For masking out the subsequent info. '''
-    sz_b, len_s = seq.size()
-    subsequent_mask = (1 - torch.triu(
-        torch.ones((1, len_s, len_s), device=seq.device), diagonal=1)).bool()
-    return subsequent_mask
-
 
 class PositionalEncoding(nn.Module):
 
@@ -376,10 +374,9 @@ if __name__ == '__main__':
     
     input_data = torch.ones([4,1,int(4.5*16000)]).cuda()
     output = model(input_data)
-    print(output.shape)
+    # print(output.shape)
 
     y = torch.rand([4,1,int(4.5*16000)]).cuda()
     loss = torch.nn.MSELoss()(y, output)
     loss.backward()
-    print(loss.item())
-    
+    # print(loss.item())
